@@ -73,6 +73,17 @@
 - ✅ **Fixed Lives System**: Lives now correctly decrease by 1 (not 2) per death
 - ✅ **Ball Position Reset**: Proper ball positioning after death and level completion
 - ✅ **Game State Management**: Improved state transitions between levels and life loss
+- ✅ **Fixed Brick Positioning**: Bricks no longer appear at edges or outside canvas bounds
+- ✅ **Fixed Ball Splitting Bug**: Split balls (pink) no longer cause life deduction when falling off screen
+- ✅ **Fixed Canvas Boundaries**: All game elements properly contained within visible area
+- ✅ **Fixed Level Advancement**: Level progression system now works reliably with proper canvas dimension handling
+
+**Ball System Fixes:**
+
+- ✅ **Main Ball vs Split Ball Logic**: Only white ball (isMainBall=true) causes life loss
+- ✅ **Split Ball Cleanup**: Pink balls (isMainBall=false) are properly removed when falling off screen
+- ✅ **Life Deduction Logic**: Removed incorrect life loss trigger from Ball.js update method
+- ✅ **Game.js Control**: Centralized life management in GameManager for proper ball type handling
 
 **📝 IMPORTANT DEVELOPMENT NOTES:**
 

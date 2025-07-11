@@ -6,11 +6,21 @@
 class GameManager {
   constructor() {
     this.setupEventListeners();
+    this.lastLevelCompleteInput = "";
   }
 
   setupEventListeners() {
     document.addEventListener("keydown", (e) => {
       keys[e.key] = true;
+
+      // Handle level complete input
+      if (
+        window.levelManager &&
+        levelManager.handleLevelCompleteInput(e.key, false)
+      ) {
+        this.advanceToNextLevel();
+        return;
+      }
 
       if (e.key === " ") {
         // Handle spacebar for both ball launch and laser shooting
@@ -35,6 +45,12 @@ class GameManager {
       if (e.key === "t" || e.key === "T") {
         themeManager.switchTheme();
       }
+      if (e.key === "s" || e.key === "S") {
+        // Toggle sound settings
+        if (window.soundManager) {
+          soundManager.toggleSettings();
+        }
+      }
     });
 
     document.addEventListener("keyup", (e) => {
@@ -49,6 +65,12 @@ class GameManager {
     canvas.addEventListener("click", (e) => {
       if (gameState === GAME_STATES.BALL_ON_PADDLE) {
         this.launchBall();
+      } else if (
+        gameState === GAME_STATES.LEVEL_COMPLETE &&
+        window.levelManager &&
+        levelManager.handleLevelCompleteInput(null, true)
+      ) {
+        this.advanceToNextLevel();
       }
     });
   }
@@ -165,7 +187,7 @@ class GameManager {
    * Generate professional brick layout with rounded corners
    */
   generateBricks() {
-    bricks = BrickManager.generateBricks();
+    bricks = BrickManager.generateBricks(canvas.width);
   }
 
   checkBrickCollisions() {
@@ -216,12 +238,20 @@ class GameManager {
             // Handle bomb explosions
             if (brick.isBomb) {
               this.handleBombExplosion(brick);
+              // Play bomb explosion sound
+              if (window.soundManager) {
+                soundManager.play("bombExplosion");
+              }
             } else {
               particleSystem.createExplosion(
                 brick.x + brick.width / 2,
                 brick.y + brick.height / 2,
                 brick.color
               );
+              // Play brick hit sound based on type
+              if (window.soundManager) {
+                soundManager.playBrickHit(brickType);
+              }
             }
 
             particleSystem.createFloatingScore(
@@ -343,8 +373,43 @@ class GameManager {
   }
 
   levelComplete() {
-    level++;
-    ball.speed += 0.5;
+    // Show level complete screen using LevelManager
+    if (window.levelManager) {
+      levelManager.showLevelComplete(score);
+      gameState = GAME_STATES.LEVEL_COMPLETE;
+    } else {
+      // Fallback to old system
+      level++;
+      ball.speed += 0.5;
+      gameState = GAME_STATES.BALL_ON_PADDLE;
+
+      // Properly reset ball position and velocity
+      ball.x = paddle.x + paddle.width / 2;
+      ball.y = paddle.y - ball.radius - 1;
+      ball.velocityX = 0;
+      ball.velocityY = 0;
+
+      // Reset balls array to just the main ball
+      balls = [ball];
+
+      this.generateBricks();
+      this.updateUI();
+    }
+  }
+
+  /**
+   * Advance to next level after level complete screen
+   */
+  advanceToNextLevel() {
+    if (!window.levelManager) return;
+
+    const newLevel = levelManager.advanceLevel();
+    level = newLevel;
+
+    // Apply level settings
+    levelManager.applyLevelSettings(ball, bricks);
+
+    // Reset game state
     gameState = GAME_STATES.BALL_ON_PADDLE;
 
     // Properly reset ball position and velocity
@@ -356,7 +421,12 @@ class GameManager {
     // Reset balls array to just the main ball
     balls = [ball];
 
+    // Generate new bricks and apply movement
     this.generateBricks();
+    if (levelManager.getCurrentConfig().brickMovement) {
+      levelManager.applyLevelSettings(ball, bricks);
+    }
+
     this.updateUI();
   }
 
@@ -432,7 +502,10 @@ class GameManager {
   }
 
   update() {
-    if (gameState !== GAME_STATES.PAUSED) {
+    if (
+      gameState !== GAME_STATES.PAUSED &&
+      gameState !== GAME_STATES.LEVEL_COMPLETE
+    ) {
       // Null checks to prevent undefined errors
       if (paddle && typeof paddle.update === "function") {
         paddle.update(keys, mouseX);
@@ -445,16 +518,16 @@ class GameManager {
           if (currentBall && typeof currentBall.update === "function") {
             currentBall.update();
 
-            // Remove balls that fall off screen (except main ball)
-            if (currentBall.y > canvas.height && currentBall !== ball) {
+            // Remove split balls that fall off screen (NOT main ball)
+            if (currentBall.y > canvas.height && !currentBall.isMainBall) {
               balls.splice(i, 1);
             }
           }
         }
       }
 
-      // If main ball falls off screen, handle life loss
-      if (ball && ball.y > canvas.height) {
+      // Only lose life if MAIN ball falls off screen
+      if (ball && ball.isMainBall && ball.y > canvas.height) {
         this.loseLife();
         return;
       }
@@ -462,6 +535,14 @@ class GameManager {
       this.checkBrickCollisions();
       this.checkPaddleCollision();
       this.checkLaserCollisions();
+
+      // Update brick movement if level manager is active
+      if (
+        window.levelManager &&
+        typeof levelManager.updateBrickMovement === "function"
+      ) {
+        levelManager.updateBrickMovement(bricks, canvas.width, canvas.height);
+      }
 
       // Safe system updates with null checks
       if (powerUpSystem && typeof powerUpSystem.update === "function") {
@@ -557,6 +638,11 @@ class GameManager {
       this.renderGameOver(ctx);
     } else if (gameState === GAME_STATES.PAUSED) {
       this.renderPauseScreen(ctx);
+    } else if (
+      gameState === GAME_STATES.LEVEL_COMPLETE &&
+      window.levelManager
+    ) {
+      levelManager.renderLevelComplete(ctx, score, canvas.width, canvas.height);
     }
   }
 }

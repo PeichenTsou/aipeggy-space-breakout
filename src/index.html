@@ -32,7 +32,20 @@
     <canvas id="gameCanvas" width="800" height="600"></canvas>
     
     <div id="instructions">
-        Use ← → arrow keys or mouse to move paddle | Space to launch ball/shoot lasers | B for beam attack | R to restart | P to pause | T to change theme
+        <div class="instruction-section">
+            <div class="instruction-category">
+                <span class="instruction-icon">🎮</span>
+                <strong>Movement:</strong> ← → Arrow keys or Mouse
+            </div>
+            <div class="instruction-category">
+                <span class="instruction-icon">🚀</span>
+                <strong>Actions:</strong> Space to launch ball/shoot lasers • B for beam attack
+            </div>
+            <div class="instruction-category">
+                <span class="instruction-icon">⚙️</span>
+                <strong>Game:</strong> R to restart • P to pause • T to change theme • S for sound settings
+            </div>
+        </div>
     </div>
 
     <!-- Core Scripts -->
@@ -45,6 +58,8 @@
     <script src="scripts/entities/Laser.js"></script>
     
     <!-- System Scripts -->
+    <script src="scripts/systems/SoundManager.js"></script>
+    <script src="scripts/systems/LevelManager.js"></script>
     <script src="scripts/systems/AIAssistant.js"></script>
     <script src="scripts/systems/PowerUpSystem.js"></script>
     <script src="scripts/systems/ParticleSystem.js"></script>
@@ -81,6 +96,8 @@
 
         // Initialize game systems
         const themeManager = new ThemeManager();
+        const soundManager = new SoundManager();
+        const levelManager = new LevelManager();
         const aiAssistant = new AIAssistant();
         const particleSystem = new ParticleSystem();
         const powerUpSystem = new PowerUpSystem();
@@ -88,9 +105,13 @@
         const energySystem = new EnergySystem();
         const gameManager = new GameManager();
 
+        // Make systems globally available
+        window.soundManager = soundManager;
+        window.levelManager = levelManager;
+
         // Initialize game entities
         const paddle = new Paddle(canvas.width / 2 - 50, canvas.height - 30, 100, 15);
-        const ball = new Ball(paddle.x + paddle.width / 2, paddle.y - 12, 10);
+        const ball = new Ball(paddle.x + paddle.width / 2, paddle.y - 12, 10, true); // Main ball
         balls = [ball];
 
         /**
@@ -101,6 +122,19 @@
             gameManager.render(ctx);
             requestAnimationFrame(gameLoop);
         }
+
+        // Initialize sound system on first user interaction
+        document.addEventListener('click', () => {
+            if (!soundManager.initialized) {
+                soundManager.initialize();
+            }
+        }, { once: true });
+
+        document.addEventListener('keydown', () => {
+            if (!soundManager.initialized) {
+                soundManager.initialize();
+            }
+        }, { once: true });
 
         // Initialize and start the enhanced game
         gameManager.generateBricks();

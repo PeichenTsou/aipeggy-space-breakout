@@ -86,6 +86,11 @@ class PowerUpSystem {
       ) {
         this.activatePowerUp(powerUp.type);
         this.powerUps.splice(i, 1);
+
+        // Play power-up collection sound
+        if (window.soundManager) {
+          soundManager.play("powerUpCollect");
+        }
       }
     }
 
@@ -119,17 +124,22 @@ class PowerUpSystem {
         break;
 
       case "multiBall":
-        const newBall1 = new Ball(ball.x, ball.y, ball.radius);
+        const newBall1 = new Ball(ball.x, ball.y, ball.radius, false); // Split ball
         newBall1.velocityX = ball.velocityX + 2;
         newBall1.velocityY = ball.velocityY;
-        newBall1.color = colors.powerUps.multiBall;
+        newBall1.speed = ball.speed;
 
-        const newBall2 = new Ball(ball.x, ball.y, ball.radius);
+        const newBall2 = new Ball(ball.x, ball.y, ball.radius, false); // Split ball
         newBall2.velocityX = ball.velocityX - 2;
         newBall2.velocityY = ball.velocityY;
-        newBall2.color = colors.powerUps.multiBall;
+        newBall2.speed = ball.speed;
 
         balls.push(newBall1, newBall2);
+
+        // Play ball split sound
+        if (window.soundManager) {
+          soundManager.play("ballSplit");
+        }
         break;
 
       case "slowBall":

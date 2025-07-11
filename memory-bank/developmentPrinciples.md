@@ -2,6 +2,16 @@
 
 ## Senior Developer Guidelines
 
+### Core Development Principle
+
+**KEEP THINGS SIMPLE** - This is the fundamental principle that guides all development decisions:
+
+- Prioritize simplicity over complexity in all implementations
+- Choose straightforward solutions over clever ones
+- Minimize dependencies and avoid over-engineering
+- Focus on functionality that directly serves the user experience
+- Reduce documentation overhead - keep only essential documentation
+
 ### For Development Tasks
 
 Act as a senior developer with expertise in HTML game applications. When making changes:
@@ -146,6 +156,30 @@ Act as a senior architect with expert knowledge in HTML game development:
 - [ ] Confidence rating validated
 - [ ] **AUTOMATIC MEMORY BANK UPDATE** - After finishing any action, automatically update memory bank with results and inform user
 - [ ] **NEW TASK OPTION** - Always offer user the option to start a new task after completion
+
+### Task Completion Workflow
+
+**MANDATORY 3-STEP PROCESS FOR ALL TASKS:**
+
+1. **✅ VERIFY TESTS** - First check all tests are successful
+
+   - Run comprehensive test suite (Unit, Integration, Functional)
+   - Ensure 100% test pass rate before proceeding
+   - Fix any failing tests immediately
+
+2. **📝 UPDATE MEMORY BANK** - Second update the memory bank
+
+   - Update activeContext.md with current project state
+   - Update progress.md with completed work
+   - Document all changes, bug fixes, and new features
+   - **CRITICAL: Memory bank MUST be updated before step 3**
+
+3. **🚀 ASK FOR NEW TASK** - Last ask to start new task
+   - Only after memory bank is fully updated
+   - Provide clear summary of completed work
+   - Offer to begin new development task
+
+**⚠️ NEVER skip step 2 - Always update memory bank before asking to start new task**
 
 ## Architecture Patterns
 

@@ -4,14 +4,22 @@
  * @description Handles ball physics, movement, and rendering
  */
 class Ball {
-  constructor(x, y, radius) {
+  constructor(x, y, radius, isMainBall = false) {
     this.x = x;
     this.y = y;
     this.radius = radius;
     this.velocityX = 0;
     this.velocityY = 0;
     this.speed = 6;
-    this.color = themeManager.getColors().ball;
+    this.isMainBall = isMainBall;
+    this.ballType = isMainBall ? "main" : "split";
+
+    // Set color based on ball type
+    if (isMainBall) {
+      this.color = themeManager.getColors().ball; // White/main color
+    } else {
+      this.color = themeManager.getColors().powerUps?.multiBall || "#FF69B4"; // Pink for split balls
+    }
   }
 
   update() {
@@ -42,7 +50,6 @@ class Ball {
     }
 
     if (this.y > canvas.height) {
-      gameManager.loseLife();
       return;
     }
   }

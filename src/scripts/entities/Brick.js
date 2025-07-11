@@ -13,12 +13,32 @@ const BRICK_TYPES = {
 const BRICK_CONFIG = {
   rows: 6,
   cols: 9, // Reduced for better proportions
-  width: 90, // Wider bricks (was 75)
+  width: 75, // Adjusted to fit within canvas bounds
   height: 28, // Taller bricks (was 20)
-  padding: 8, // Better spacing (was 5)
-  offsetX: 15, // Centered positioning
+  padding: 6, // Better spacing (was 5)
+  offsetX: 20, // Centered positioning
   offsetY: 60,
   borderRadius: 8, // Professional rounded corners
+
+  // Dynamic calculation method to ensure bricks fit within canvas
+  calculateLayout: function (canvasWidth) {
+    const availableWidth = canvasWidth - this.offsetX * 2;
+    const totalPadding = (this.cols - 1) * this.padding;
+    const maxBrickWidth = Math.floor(
+      (availableWidth - totalPadding) / this.cols
+    );
+
+    // Use the smaller of configured width or calculated max width
+    const actualWidth = Math.min(this.width, maxBrickWidth);
+    const totalUsedWidth = actualWidth * this.cols + totalPadding;
+    const actualOffsetX = Math.floor((canvasWidth - totalUsedWidth) / 2);
+
+    return {
+      width: actualWidth,
+      offsetX: actualOffsetX,
+      totalWidth: totalUsedWidth,
+    };
+  },
 };
 
 /**
@@ -28,9 +48,12 @@ class BrickManager {
   /**
    * Generate professional brick layout with rounded corners
    */
-  static generateBricks() {
+  static generateBricks(canvasWidth = 800) {
     const bricks = [];
     const colors = themeManager.getColors().bricks;
+
+    // Calculate dynamic layout to ensure bricks fit within canvas
+    const layout = BRICK_CONFIG.calculateLayout(canvasWidth);
 
     for (let row = 0; row < BRICK_CONFIG.rows; row++) {
       for (let col = 0; col < BRICK_CONFIG.cols; col++) {
@@ -53,8 +76,11 @@ class BrickManager {
           color = colors.green;
         }
 
-        // Add bomb bricks with low probability (5% chance)
-        if (level > 1 && Math.random() < 0.05) {
+        // Add bomb bricks with level-based probability
+        const bombChance = window.levelManager
+          ? window.levelManager.getCurrentConfig().bombChance
+          : 0.03;
+        if (Math.random() < bombChance) {
           if (Math.random() < 0.5) {
             brickType = BRICK_TYPES.BOMB_LINE;
             color =
@@ -78,14 +104,13 @@ class BrickManager {
           color = colors[randomKey.toLowerCase()];
         }
 
+        // Use dynamic layout values to ensure proper positioning
         const brick = {
-          x:
-            BRICK_CONFIG.offsetX +
-            col * (BRICK_CONFIG.width + BRICK_CONFIG.padding),
+          x: layout.offsetX + col * (layout.width + BRICK_CONFIG.padding),
           y:
             BRICK_CONFIG.offsetY +
             row * (BRICK_CONFIG.height + BRICK_CONFIG.padding),
-          width: BRICK_CONFIG.width,
+          width: layout.width,
           height: BRICK_CONFIG.height,
           maxHits: brickType.hits,
           hits: brickType.hits,
@@ -97,6 +122,11 @@ class BrickManager {
           row: row,
           col: col,
           shimmerTime: Math.random() * 1000, // For bomb animation
+          originalX:
+            layout.offsetX + col * (layout.width + BRICK_CONFIG.padding), // Store original position for movement
+          originalY:
+            BRICK_CONFIG.offsetY +
+            row * (BRICK_CONFIG.height + BRICK_CONFIG.padding),
         };
 
         bricks.push(brick);

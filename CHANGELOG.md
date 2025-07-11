@@ -5,6 +5,14 @@ All notable changes to the AIPeggy AI Brick Ball Game will be documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.1] - 2025-01-11
+
+### 🐛 Fixed - Critical Ball System Bug
+
+- **Split Ball Life Deduction Fixed**: Split balls (pink balls from multi-ball power-up) no longer cause life deduction when falling off screen
+- **Main Ball Logic Preserved**: Only the white main ball triggers life loss as intended
+- **Game Logic Centralized**: Removed duplicate life management from Ball.js, now properly handled in GameManager
+
 ## [5.0.0] - 2025-01-11
 
 ### 🎆 Added - Bomb Bricks System

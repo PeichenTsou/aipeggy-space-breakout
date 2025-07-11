@@ -70,6 +70,11 @@ class EnergySystem {
     // Create dramatic beam particles
     this.createBeamParticles();
 
+    // Play beam attack sound
+    if (window.soundManager) {
+      soundManager.play("beamAttack");
+    }
+
     // Screen shake effect
     if (typeof canvas !== "undefined") {
       this.createScreenShake();
