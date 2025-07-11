@@ -85,6 +85,13 @@
 - ✅ **Life Deduction Logic**: Removed incorrect life loss trigger from Ball.js update method
 - ✅ **Game.js Control**: Centralized life management in GameManager for proper ball type handling
 
+**Power-Up System Fixes:**
+
+- ✅ **Increased Power-Up Drop Rates**: Fixed low power-up appearance rates that made multi-ball rare
+- ✅ **Enhanced Drop Frequency**: Increased base drop rate from 15% to 30% for better gameplay experience
+- ✅ **AI-Adjusted Rates**: Improved rates for all assistance levels (35% subtle, 40% active help)
+- ✅ **Multi-Ball Availability**: Multi-ball power-ups now appear much more frequently and reliably
+
 **📝 IMPORTANT DEVELOPMENT NOTES:**
 
 - ✅ **Basic Function Validation**: Added to memory bank - after implementing new features, always verify core game mechanics (ball physics, paddle movement, collision detection, scoring) still work correctly

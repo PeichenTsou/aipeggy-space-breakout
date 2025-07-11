@@ -97,13 +97,13 @@ class AIAssistant {
   }
 
   getAdjustedPowerUpChance() {
-    let baseChance = 0.15;
+    let baseChance = 0.3; // Increased from 0.15 to 0.3 (30%)
     if (this.currentAssistanceLevel === this.assistanceLevels.SUBTLE_HELP) {
-      baseChance = 0.2;
+      baseChance = 0.35; // Increased from 0.2 to 0.35 (35%)
     } else if (
       this.currentAssistanceLevel === this.assistanceLevels.ACTIVE_HELP
     ) {
-      baseChance = 0.25;
+      baseChance = 0.4; // Increased from 0.25 to 0.4 (40%)
     }
     return baseChance;
   }

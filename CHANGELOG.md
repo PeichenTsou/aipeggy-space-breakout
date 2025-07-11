@@ -5,6 +5,15 @@ All notable changes to the AIPeggy AI Brick Ball Game will be documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.2] - 2025-01-11
+
+### 🎮 Enhanced - Power-Up System Improvements
+
+- **Increased Power-Up Drop Rates**: Enhanced base drop rate from 15% to 30% for better gameplay experience
+- **Multi-Ball Availability**: Multi-ball power-ups now appear much more frequently and reliably
+- **AI-Adjusted Rates**: Improved drop rates for all assistance levels (35% subtle help, 40% active help)
+- **Enhanced Player Experience**: More engaging gameplay with frequent power-up appearances
+
 ## [5.0.1] - 2025-01-11
 
 ### 🐛 Fixed - Critical Ball System Bug

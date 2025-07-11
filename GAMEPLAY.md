@@ -112,7 +112,7 @@ Destroy all bricks on the screen by bouncing a ball with your paddle. Complete a
 
 ### Power-up Mechanics
 
-- **Drop Chance**: 15-25% chance when destroying bricks (AI-adjusted)
+- **Drop Chance**: 30-40% chance when destroying bricks (AI-adjusted, significantly improved)
 - **Collection**: Touch falling power-up with paddle
 - **Stacking**: Multiple power-ups can be active simultaneously
 - **Timer Display**: Active power-ups show countdown in top-left corner
@@ -205,21 +205,21 @@ The AI continuously monitors your gameplay performance:
 
 - **Status**: Full challenge mode
 - **Assistance**: None - pure skill-based gameplay
-- **Power-up Rate**: Standard 15% drop chance
+- **Power-up Rate**: Enhanced 30% drop chance
 - **Physics**: Normal ball and paddle physics
 
 #### Subtle Help (30-60% accuracy)
 
 - **Status**: Minor assistance activated
 - **Assistance**: Slight ball magnetism toward paddle when close
-- **Power-up Rate**: Increased to 20% drop chance
+- **Power-up Rate**: Increased to 35% drop chance
 - **Physics**: Nearly imperceptible physics adjustments
 
 #### Active Help (<30% accuracy)
 
 - **Status**: Maximum assistance activated
 - **Assistance**: Enhanced paddle collision area + stronger magnetism
-- **Power-up Rate**: Maximum 25% drop chance
+- **Power-up Rate**: Maximum 40% drop chance
 - **Physics**: Noticeable but still challenging adjustments
 
 ### AI Philosophy
