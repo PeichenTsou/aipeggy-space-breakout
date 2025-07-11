@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AIPeggy - Space Brick Ball</title>
     
+    <!-- Google Fonts - Pixel Game Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+    
     <!-- Base Styles -->
     <link rel="stylesheet" href="styles/base.css">
     
@@ -27,7 +32,7 @@
     <canvas id="gameCanvas" width="800" height="600"></canvas>
     
     <div id="instructions">
-        Use ← → arrow keys or mouse to move paddle | Space to launch ball | R to restart | P to pause | T to change theme
+        Use ← → arrow keys or mouse to move paddle | Space to launch ball/shoot lasers | R to restart | P to pause | T to change theme
     </div>
 
     <!-- Core Scripts -->
@@ -37,6 +42,7 @@
     <script src="scripts/entities/Paddle.js"></script>
     <script src="scripts/entities/Ball.js"></script>
     <script src="scripts/entities/Brick.js"></script>
+    <script src="scripts/entities/Laser.js"></script>
     
     <!-- System Scripts -->
     <script src="scripts/systems/AIAssistant.js"></script>
@@ -77,6 +83,7 @@
         const aiAssistant = new AIAssistant();
         const particleSystem = new ParticleSystem();
         const powerUpSystem = new PowerUpSystem();
+        const laserManager = new LaserManager();
         const gameManager = new GameManager();
 
         // Initialize game entities

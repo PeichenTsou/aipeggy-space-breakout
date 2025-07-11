@@ -20,6 +20,12 @@ const POWER_UP_TYPES = {
     icon: "⏱",
     size: { width: 40, height: 30 },
   },
+  LASER_PADDLE: {
+    effect: "laserPaddle",
+    duration: 15000,
+    icon: "⚡",
+    size: { width: 40, height: 30 },
+  },
 };
 
 /**
@@ -142,6 +148,17 @@ class PowerUpSystem {
           startTime: Date.now(),
         });
         break;
+
+      case "laserPaddle":
+        paddle.hasLaser = true;
+        paddle.color = colors.powerUps.laser || "#FFD700";
+        this.activePowerUps.push({
+          type: type,
+          effect: powerUpData.effect,
+          duration: powerUpData.duration,
+          startTime: Date.now(),
+        });
+        break;
     }
   }
 
@@ -157,6 +174,10 @@ class PowerUpSystem {
         ball.speed /= 0.7;
         ball.velocityX /= 0.7;
         ball.velocityY /= 0.7;
+        break;
+      case "laserPaddle":
+        paddle.hasLaser = false;
+        paddle.reset();
         break;
     }
   }

@@ -12,16 +12,22 @@ class Paddle {
     this.speed = 8;
     this.color = themeManager.getColors().paddle;
     this.originalWidth = width;
+    this.hasLaser = false;
+    this.lastLaserTime = 0;
+    this.laserCooldown = 200; // 200ms between laser shots
   }
 
   update(keys, mouseX) {
     // Keyboard controls with smooth movement
-    if (keys["ArrowLeft"] && this.x > 0) {
+    if (keys["ArrowLeft"]) {
       this.x -= this.speed;
     }
-    if (keys["ArrowRight"] && this.x < canvas.width - this.width) {
+    if (keys["ArrowRight"]) {
       this.x += this.speed;
     }
+
+    // Apply boundary constraints for keyboard movement
+    this.x = Math.max(0, Math.min(canvas.width - this.width, this.x));
 
     // Enhanced mouse controls
     if (mouseX > 0 && mouseX < canvas.width) {

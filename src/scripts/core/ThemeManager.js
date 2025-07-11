@@ -95,6 +95,7 @@ const THEMES = {
         widePaddle: "#8B5CF6",
         multiBall: "#EC4899",
         slowBall: "#3B82F6",
+        laser: "#FFD700",
       },
       particles: {
         explosion: "#EC4899",
@@ -123,6 +124,7 @@ const THEMES = {
         widePaddle: "#38A169",
         multiBall: "#9F7AEA",
         slowBall: "#3182CE",
+        laser: "#F6AD55",
       },
       particles: {
         explosion: "#E53E3E",

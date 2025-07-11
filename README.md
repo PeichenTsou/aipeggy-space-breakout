@@ -1,6 +1,6 @@
 # 🚀 AIPeggy Space Breakout
 
-[![Version](https://img.shields.io/badge/Version-4.0.0-blue.svg)](https://github.com/username/aipeggy-space-breakout)
+[![Version](https://img.shields.io/badge/Version-4.1.0-blue.svg)](https://github.com/username/aipeggy-space-breakout)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![HTML5](https://img.shields.io/badge/HTML5-Canvas-orange.svg)](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
@@ -97,6 +97,7 @@ npx serve .
 - **↔ Wide Paddle**: Increases paddle width for 15 seconds
 - **●●● Multi-ball**: Splits ball into 3 balls for maximum destruction
 - **⏱ Slow Ball**: Reduces ball speed by 30% for 20 seconds
+- **⚡ Laser Paddle**: Enables paddle to shoot laser projectiles for 15 seconds
 
 ## 🎨 Themes
 
@@ -187,6 +188,31 @@ aipeggy-space-breakout/
 - ✅ **Safari 12+**
 - ✅ **Edge 79+**
 
+## 🧪 Testing Suite
+
+AIPeggy includes a comprehensive testing framework for ensuring code quality and functionality:
+
+### **Test Runner**
+
+```bash
+# Open the test runner in your browser
+open tests/testRunner.html
+```
+
+### **Test Categories**
+
+- **🔧 Unit Tests** - Individual component testing (Ball, Paddle, Brick entities)
+- **🔗 Integration Tests** - System interaction testing (PowerUpSystem, GameManager)
+- **🎯 Functional Tests** - Complete workflow testing (GameplayFlow, UserInteraction)
+- **⚡ Performance Tests** - Speed and memory usage monitoring
+
+### **Running Tests**
+
+1. **All Tests** - Run complete test suite with visual results
+2. **Selective Testing** - Run specific test categories (Unit, Integration, Functional)
+3. **Visual Feedback** - Color-coded results with detailed error reporting
+4. **Performance Metrics** - Built-in timing and performance analysis
+
 ## 🎯 Development
 
 ### **Code Quality Standards**
@@ -196,13 +222,15 @@ aipeggy-space-breakout/
 - **Performance First** - Optimized algorithms maintaining 60fps
 - **Professional Naming** - Descriptive variable and function names
 - **Error Handling** - Graceful error recovery and validation
+- **Test Coverage** - Comprehensive testing across all game systems
 
 ### **Adding New Features**
 
 1. **Entities** - Add new game objects in `src/scripts/entities/`
 2. **Systems** - Add new game systems in `src/scripts/systems/`
 3. **Themes** - Add new themes in `src/styles/themes/`
-4. **Update** - Modify `src/index.html` to include new scripts
+4. **Tests** - Add corresponding tests in `tests/` directory
+5. **Update** - Modify `src/index.html` to include new scripts
 
 ## 📄 License
 

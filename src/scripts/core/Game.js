@@ -12,8 +12,13 @@ class GameManager {
     document.addEventListener("keydown", (e) => {
       keys[e.key] = true;
 
-      if (e.key === " " && gameState === GAME_STATES.BALL_ON_PADDLE) {
-        this.launchBall();
+      if (e.key === " ") {
+        // Handle spacebar for both ball launch and laser shooting
+        if (gameState === GAME_STATES.BALL_ON_PADDLE) {
+          this.launchBall();
+        } else if (gameState === GAME_STATES.PLAYING && paddle.hasLaser) {
+          this.shootLaser();
+        }
       }
       if (e.key === "r" || e.key === "R") {
         this.restartGame();
@@ -48,6 +53,19 @@ class GameManager {
   }
 
   /**
+   * Shoot laser from paddle if laser power-up is active
+   */
+  shootLaser() {
+    if (
+      paddle.hasLaser &&
+      Date.now() - paddle.lastLaserTime > paddle.laserCooldown
+    ) {
+      laserManager.createLaser(paddle.x, paddle.y, paddle.width);
+      paddle.lastLaserTime = Date.now();
+    }
+  }
+
+  /**
    * Generate professional brick layout with rounded corners
    */
   generateBricks() {
@@ -55,73 +73,80 @@ class GameManager {
   }
 
   checkBrickCollisions() {
-    for (let i = 0; i < bricks.length; i++) {
-      const brick = bricks[i];
-      if (brick.destroyed) continue;
+    // Check collisions for all active balls
+    for (let ballIndex = 0; ballIndex < balls.length; ballIndex++) {
+      const currentBall = balls[ballIndex];
 
-      if (
-        ball.x + ball.radius >= brick.x &&
-        ball.x - ball.radius <= brick.x + brick.width &&
-        ball.y + ball.radius >= brick.y &&
-        ball.y - ball.radius <= brick.y + brick.height
-      ) {
-        const ballCenterX = ball.x;
-        const ballCenterY = ball.y;
-        const brickCenterX = brick.x + brick.width / 2;
-        const brickCenterY = brick.y + brick.height / 2;
+      for (let i = 0; i < bricks.length; i++) {
+        const brick = bricks[i];
+        if (brick.destroyed) continue;
 
-        const deltaX = ballCenterX - brickCenterX;
-        const deltaY = ballCenterY - brickCenterY;
+        if (
+          currentBall.x + currentBall.radius >= brick.x &&
+          currentBall.x - currentBall.radius <= brick.x + brick.width &&
+          currentBall.y + currentBall.radius >= brick.y &&
+          currentBall.y - currentBall.radius <= brick.y + brick.height
+        ) {
+          const ballCenterX = currentBall.x;
+          const ballCenterY = currentBall.y;
+          const brickCenterX = brick.x + brick.width / 2;
+          const brickCenterY = brick.y + brick.height / 2;
 
-        const intersectX = Math.abs(deltaX) - (brick.width / 2 + ball.radius);
-        const intersectY = Math.abs(deltaY) - (brick.height / 2 + ball.radius);
+          const deltaX = ballCenterX - brickCenterX;
+          const deltaY = ballCenterY - brickCenterY;
 
-        if (intersectX > intersectY) {
-          ball.velocityY = -ball.velocityY;
-        } else {
-          ball.velocityX = -ball.velocityX;
-        }
+          const intersectX =
+            Math.abs(deltaX) - (brick.width / 2 + currentBall.radius);
+          const intersectY =
+            Math.abs(deltaY) - (brick.height / 2 + currentBall.radius);
 
-        brick.hits--;
-        if (brick.hits <= 0) {
-          brick.destroyed = true;
-          score += brick.points;
-          this.updateUI();
-
-          particleSystem.createExplosion(
-            brick.x + brick.width / 2,
-            brick.y + brick.height / 2,
-            brick.color
-          );
-          particleSystem.createFloatingScore(
-            brick.x + brick.width / 2,
-            brick.y + brick.height / 2,
-            brick.points
-          );
-
-          aiAssistant.metrics.bricksHit++;
-          if (Math.random() < aiAssistant.getAdjustedPowerUpChance()) {
-            powerUpSystem.dropPowerUp(
-              brick.x + brick.width / 2,
-              brick.y + brick.height
-            );
+          if (intersectX > intersectY) {
+            currentBall.velocityY = -currentBall.velocityY;
+          } else {
+            currentBall.velocityX = -currentBall.velocityX;
           }
 
-          if (bricks.every((b) => b.destroyed)) {
-            this.levelComplete();
-          }
-        } else {
-          if (brick.hits === 1 && brick.maxHits === 2) {
-            brick.color = brick.color.replace("44", "88");
-            particleSystem.createSmallExplosion(
+          brick.hits--;
+          if (brick.hits <= 0) {
+            brick.destroyed = true;
+            score += brick.points;
+            this.updateUI();
+
+            particleSystem.createExplosion(
               brick.x + brick.width / 2,
               brick.y + brick.height / 2,
               brick.color
             );
-          }
-        }
+            particleSystem.createFloatingScore(
+              brick.x + brick.width / 2,
+              brick.y + brick.height / 2,
+              brick.points
+            );
 
-        break;
+            aiAssistant.metrics.bricksHit++;
+            if (Math.random() < aiAssistant.getAdjustedPowerUpChance()) {
+              powerUpSystem.dropPowerUp(
+                brick.x + brick.width / 2,
+                brick.y + brick.height
+              );
+            }
+
+            if (bricks.every((b) => b.destroyed)) {
+              this.levelComplete();
+            }
+          } else {
+            if (brick.hits === 1 && brick.maxHits === 2) {
+              brick.color = brick.color.replace("44", "88");
+              particleSystem.createSmallExplosion(
+                brick.x + brick.width / 2,
+                brick.y + brick.height / 2,
+                brick.color
+              );
+            }
+          }
+
+          break;
+        }
       }
     }
   }
@@ -135,22 +160,78 @@ class GameManager {
       paddleWidth += 20;
     }
 
-    if (
-      ball.y + ball.radius >= paddle.y &&
-      ball.y - ball.radius <= paddle.y + paddle.height &&
-      ball.x >= paddle.x - (paddleWidth - paddle.width) / 2 &&
-      ball.x <= paddle.x + paddleWidth - (paddleWidth - paddle.width) / 2
-    ) {
-      aiAssistant.metrics.paddleHits++;
-      aiAssistant.metrics.totalBallBounces++;
-      aiAssistant.metrics.consecutiveDeaths = 0;
+    // Check paddle collision for all active balls
+    for (let ballIndex = 0; ballIndex < balls.length; ballIndex++) {
+      const currentBall = balls[ballIndex];
 
-      const hitPos = (ball.x - paddle.x) / paddle.width;
-      const angle = (hitPos - 0.5) * Math.PI * 0.6;
+      if (
+        currentBall.y + currentBall.radius >= paddle.y &&
+        currentBall.y - currentBall.radius <= paddle.y + paddle.height &&
+        currentBall.x >= paddle.x - (paddleWidth - paddle.width) / 2 &&
+        currentBall.x <=
+          paddle.x + paddleWidth - (paddleWidth - paddle.width) / 2
+      ) {
+        aiAssistant.metrics.paddleHits++;
+        aiAssistant.metrics.totalBallBounces++;
+        aiAssistant.metrics.consecutiveDeaths = 0;
 
-      ball.velocityX = Math.sin(angle) * ball.speed;
-      ball.velocityY = -Math.abs(Math.cos(angle) * ball.speed);
-      ball.y = paddle.y - ball.radius - 1;
+        const hitPos = (currentBall.x - paddle.x) / paddle.width;
+        const angle = (hitPos - 0.5) * Math.PI * 0.6;
+
+        currentBall.velocityX = Math.sin(angle) * currentBall.speed;
+        currentBall.velocityY = -Math.abs(Math.cos(angle) * currentBall.speed);
+        currentBall.y = paddle.y - currentBall.radius - 1;
+      }
+    }
+  }
+
+  /**
+   * Check laser collisions with bricks
+   */
+  checkLaserCollisions() {
+    const collisions = laserManager.checkBrickCollisions(bricks);
+
+    for (let collision of collisions) {
+      const brick = collision.brick;
+
+      brick.hits--;
+      if (brick.hits <= 0) {
+        brick.destroyed = true;
+        score += brick.points;
+        this.updateUI();
+
+        particleSystem.createExplosion(
+          brick.x + brick.width / 2,
+          brick.y + brick.height / 2,
+          brick.color
+        );
+        particleSystem.createFloatingScore(
+          brick.x + brick.width / 2,
+          brick.y + brick.height / 2,
+          brick.points
+        );
+
+        aiAssistant.metrics.bricksHit++;
+        if (Math.random() < aiAssistant.getAdjustedPowerUpChance()) {
+          powerUpSystem.dropPowerUp(
+            brick.x + brick.width / 2,
+            brick.y + brick.height
+          );
+        }
+
+        if (bricks.every((b) => b.destroyed)) {
+          this.levelComplete();
+        }
+      } else {
+        if (brick.hits === 1 && brick.maxHits === 2) {
+          brick.color = brick.color.replace("44", "88");
+          particleSystem.createSmallExplosion(
+            brick.x + brick.width / 2,
+            brick.y + brick.height / 2,
+            brick.color
+          );
+        }
+      }
     }
   }
 
@@ -212,6 +293,7 @@ class GameManager {
     paddle.x = canvas.width / 2 - paddle.width / 2;
     paddle.reset();
     powerUpSystem.clear();
+    laserManager.clear();
     balls = [ball];
     particleSystem.clear();
     aiAssistant.reset();
@@ -228,10 +310,29 @@ class GameManager {
   update() {
     if (gameState !== GAME_STATES.PAUSED) {
       paddle.update(keys, mouseX);
-      ball.update();
+
+      // Update all balls and remove those that fall off screen
+      for (let i = balls.length - 1; i >= 0; i--) {
+        const currentBall = balls[i];
+        currentBall.update();
+
+        // Remove balls that fall off screen (except main ball)
+        if (currentBall.y > canvas.height && currentBall !== ball) {
+          balls.splice(i, 1);
+        }
+      }
+
+      // If main ball falls off screen, handle life loss
+      if (ball.y > canvas.height) {
+        this.loseLife();
+        return;
+      }
+
       this.checkBrickCollisions();
       this.checkPaddleCollision();
+      this.checkLaserCollisions();
       powerUpSystem.update();
+      laserManager.update();
       aiAssistant.updateMetrics();
       aiAssistant.applyAssistance(ball);
       particleSystem.update();
@@ -286,7 +387,15 @@ class GameManager {
     BrickManager.renderBricks(ctx, bricks);
     powerUpSystem.render(ctx);
     paddle.render(ctx);
-    ball.render(ctx);
+
+    // Render all active balls
+    for (let currentBall of balls) {
+      currentBall.render(ctx);
+    }
+
+    // Render lasers
+    laserManager.render(ctx);
+
     particleSystem.render(ctx);
 
     if (gameState === GAME_STATES.GAME_OVER) {

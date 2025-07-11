@@ -5,6 +5,68 @@ All notable changes to the AIPeggy AI Brick Ball Game will be documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.0] - 2025-01-11
+
+### 🚀 Added - Laser Power-up System
+
+- **Laser Paddle Power-up**: New power-up that enables paddle to shoot laser projectiles
+- **Laser Entity**: Professional laser projectile system with physics and collision detection
+- **Laser Manager**: Comprehensive system for managing multiple laser projectiles
+- **Visual Effects**: Laser beams with glow effects and trail animations
+- **Theme Integration**: Laser colors adapt to current theme (Space: Gold, Minimalist: Orange)
+- **Collision System**: Precise laser-to-brick collision detection and destruction
+- **Cooldown System**: 200ms cooldown between laser shots for balanced gameplay
+
+### 🧪 Added - Comprehensive Testing Suite
+
+- **Test Runner**: Professional HTML-based test runner with visual interface
+- **Unit Tests**: Individual component testing for Ball, Paddle, Brick entities
+- **Integration Tests**: System interaction testing for PowerUpSystem and GameManager
+- **Functional Tests**: Complete workflow testing for GameplayFlow and UserInteraction
+- **Test Framework**: Custom testing utilities with assertion methods
+- **Performance Monitoring**: Built-in performance testing and metrics
+- **Visual Test Results**: Color-coded test results with detailed error reporting
+
+### 🔧 Enhanced - Game Controls & UI
+
+- **Improved Key Handling**: Better spacebar logic for ball launch vs laser shooting
+- **Updated Instructions**: Clear indication of laser shooting functionality
+- **Enhanced Power-up Display**: Visual indicators for active laser power-up
+- **Theme-Aware Colors**: Laser colors properly integrated with theme system
+
+### 🎯 Enhanced - Power-up System
+
+- **Laser Power-up Integration**: Seamless integration with existing power-up framework
+- **Visual Feedback**: Paddle color changes when laser power-up is active
+- **Duration Management**: 15-second laser power-up duration with countdown
+- **Balanced Drop Rates**: Laser power-up included in random power-up distribution
+
+## [4.0.0] - 2025-01-07
+
+### 🏗️ Added - Modular Architecture Edition
+
+- **Professional Structure**: Complete src/ directory organization with modular design
+- **CSS Modularization**: base.css + theme-specific files (space.css, minimalist.css)
+- **JavaScript Modularization**: core/, entities/, systems/ architecture
+- **Clean HTML Entry Point**: src/index.html with proper module imports
+- **Archive System**: All previous versions preserved in archive/
+- **Git Repository**: Professional setup with comprehensive .gitignore
+- **GitHub Integration**: Successfully deployed to GitHub with professional documentation
+
+### 🎨 Enhanced - Theme System
+
+- **Space Theme Primary**: Beautiful cosmic design with animated starfield background
+- **Dual Theme System**: Space + Minimalist themes with 'T' key switching
+- **Professional Spacing**: Improved brick spacing (8px) for better visual hierarchy
+- **Enhanced Visual Effects**: Theme-responsive particle systems and glow effects
+
+### ⚡ Enhanced - Performance & Quality
+
+- **60fps Performance**: Maintained across all features with modular architecture
+- **Senior Developer Code**: Comprehensive JSDoc documentation and error handling
+- **Cross-Browser Support**: Compatible with all modern browsers
+- **Memory Management**: Efficient particle and object cleanup
+
 ## [2.0.0] - 2025-01-11
 
 ### 🎨 Added - Theme System
