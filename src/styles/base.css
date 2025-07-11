@@ -1,0 +1,158 @@
+/* ===== PROFESSIONAL DESIGN SYSTEM ===== */
+:root {
+    /* Space Theme - Primary Color System */
+    --space-bg-primary: #0B1426;
+    --space-bg-secondary: #1E3A5F;
+    --space-bg-tertiary: #2D4A6B;
+    
+    /* Cosmic Accent Colors */
+    --space-accent-primary: #8B5CF6;
+    --space-accent-secondary: #EC4899;
+    --space-accent-tertiary: #F59E0B;
+    
+    /* Stellar Colors */
+    --stellar-white: #F8FAFC;
+    --stellar-blue: #3B82F6;
+    --stellar-purple: #6366F1;
+    
+    /* Professional Brick Color Palette */
+    --brick-tier1: #6366F1; /* Indigo - 10pts */
+    --brick-tier2: #8B5CF6; /* Purple - 20pts */
+    --brick-tier3: #EC4899; /* Pink - 30pts */
+    --brick-tier4: #F59E0B; /* Amber - 40pts */
+    
+    /* Minimalist Theme Colors */
+    --minimal-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --minimal-primary: #4A5568;
+    --minimal-secondary: #718096;
+    --minimal-accent: #E53E3E;
+    
+    /* Professional Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    
+    /* Border Radius System */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    
+    /* Professional Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.2);
+    --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.3);
+}
+
+/* ===== BASE STYLES ===== */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: var(--spacing-lg);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+#gameCanvas {
+    border: 2px solid;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: var(--radius-md);
+}
+
+#gameInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 800px;
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-md);
+    font-size: 18px;
+    font-weight: 600;
+    transition: all 0.5s ease;
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(10px);
+}
+
+#instructions {
+    margin-top: var(--spacing-lg);
+    text-align: center;
+    transition: color 0.5s ease;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+#themeSelector {
+    position: absolute;
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+    background: rgba(255, 255, 255, 0.1);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(15px);
+    transition: all 0.5s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.power-up-indicator {
+    position: absolute;
+    top: var(--spacing-md);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-xl);
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
+}
+
+/* ===== PROFESSIONAL ANIMATIONS ===== */
+@keyframes powerUpGlow {
+    0%, 100% { 
+        box-shadow: 0 0 10px currentColor;
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 0 20px currentColor;
+        transform: scale(1.05);
+    }
+}
+
+@keyframes brickDestroy {
+    0% { transform: scale(1) rotate(0deg); opacity: 1; }
+    50% { transform: scale(1.2) rotate(5deg); opacity: 0.7; }
+    100% { transform: scale(0) rotate(15deg); opacity: 0; }
+}
+
+.power-up-falling {
+    animation: powerUpGlow 1s ease-in-out infinite;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 900px) {
+    body {
+        padding: var(--spacing-md);
+    }
+    
+    #gameInfo {
+        width: 100%;
+        max-width: 800px;
+    }
+    
+    #themeSelector {
+        top: var(--spacing-md);
+        right: var(--spacing-md);
+        padding: var(--spacing-sm);
+    }
+}

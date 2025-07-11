@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIPeggy - Space Brick Ball</title>
+    
+    <!-- Base Styles -->
+    <link rel="stylesheet" href="styles/base.css">
+    
+    <!-- Theme Styles -->
+    <link rel="stylesheet" href="styles/themes/space.css">
+    <link rel="stylesheet" href="styles/themes/minimalist.css">
+</head>
+<body class="theme-space">
+    <div id="themeSelector">
+        <div style="font-weight: 600;">Theme: <span id="currentTheme">Space</span></div>
+        <div style="font-size: 12px; margin-top: var(--spacing-xs); opacity: 0.8;">Press 'T' to switch</div>
+    </div>
+    
+    <div id="gameInfo">
+        <div>Score: <span id="score">0</span></div>
+        <div>Level: <span id="level">1</span></div>
+        <div>Lives: <span id="lives">3</span></div>
+    </div>
+    
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    
+    <div id="instructions">
+        Use ← → arrow keys or mouse to move paddle | Space to launch ball | R to restart | P to pause | T to change theme
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="scripts/core/ThemeManager.js"></script>
+    
+    <!-- Entity Scripts -->
+    <script src="scripts/entities/Paddle.js"></script>
+    <script src="scripts/entities/Ball.js"></script>
+    <script src="scripts/entities/Brick.js"></script>
+    
+    <!-- System Scripts -->
+    <script src="scripts/systems/AIAssistant.js"></script>
+    <script src="scripts/systems/PowerUpSystem.js"></script>
+    <script src="scripts/systems/ParticleSystem.js"></script>
+    
+    <!-- Main Game Script -->
+    <script src="scripts/core/Game.js"></script>
+
+    <script>
+        /**
+         * AIPeggy - Professional Space Brick Ball Game
+         * v4.0.0 - Modular Architecture Edition
+         * 
+         * @author AIPeggy Development Team
+         * @version 4.0.0
+         * @description Professional Breakout game with modular architecture, Space theme, and modern design
+         */
+
+        // ===== GAME INITIALIZATION =====
+        
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Game state variables
+        let gameState = GAME_STATES.BALL_ON_PADDLE;
+        let score = 0;
+        let lives = 3;
+        let level = 1;
+        let bricks = [];
+        let balls = [];
+        let pausedState = null;
+        const keys = {};
+        let mouseX = 0;
+
+        // Initialize game systems
+        const themeManager = new ThemeManager();
+        const aiAssistant = new AIAssistant();
+        const particleSystem = new ParticleSystem();
+        const powerUpSystem = new PowerUpSystem();
+        const gameManager = new GameManager();
+
+        // Initialize game entities
+        const paddle = new Paddle(canvas.width / 2 - 50, canvas.height - 30, 100, 15);
+        const ball = new Ball(paddle.x + paddle.width / 2, paddle.y - 12, 10);
+        balls = [ball];
+
+        /**
+         * Professional game loop with optimized performance
+         */
+        function gameLoop() {
+            gameManager.update();
+            gameManager.render(ctx);
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Initialize and start the enhanced game
+        gameManager.generateBricks();
+        gameManager.updateUI();
+        themeManager.applyTheme(); // Apply Space theme as default
+        gameLoop();
+    </script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+/**
+ * Professional Game Manager with enhanced features
+ * @class GameManager
+ * @description Main game controller that coordinates all systems
+ */
+class GameManager {
+  constructor() {
+    this.setupEventListeners();
+  }
+
+  setupEventListeners() {
+    document.addEventListener("keydown", (e) => {
+      keys[e.key] = true;
+
+      if (e.key === " " && gameState === GAME_STATES.BALL_ON_PADDLE) {
+        this.launchBall();
+      }
+      if (e.key === "r" || e.key === "R") {
+        this.restartGame();
+      }
+      if (e.key === "p" || e.key === "P") {
+        this.togglePause();
+      }
+      if (e.key === "t" || e.key === "T") {
+        themeManager.switchTheme();
+      }
+    });
+
+    document.addEventListener("keyup", (e) => {
+      keys[e.key] = false;
+    });
+
+    canvas.addEventListener("mousemove", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+    });
+
+    canvas.addEventListener("click", (e) => {
+      if (gameState === GAME_STATES.BALL_ON_PADDLE) {
+        this.launchBall();
+      }
+    });
+  }
+
+  launchBall() {
+    ball.launch();
+    gameState = GAME_STATES.PLAYING;
+  }
+
+  /**
+   * Generate professional brick layout with rounded corners
+   */
+  generateBricks() {
+    bricks = BrickManager.generateBricks();
+  }
+
+  checkBrickCollisions() {
+    for (let i = 0; i < bricks.length; i++) {
+      const brick = bricks[i];
+      if (brick.destroyed) continue;
+
+      if (
+        ball.x + ball.radius >= brick.x &&
+        ball.x - ball.radius <= brick.x + brick.width &&
+        ball.y + ball.radius >= brick.y &&
+        ball.y - ball.radius <= brick.y + brick.height
+      ) {
+        const ballCenterX = ball.x;
+        const ballCenterY = ball.y;
+        const brickCenterX = brick.x + brick.width / 2;
+        const brickCenterY = brick.y + brick.height / 2;
+
+        const deltaX = ballCenterX - brickCenterX;
+        const deltaY = ballCenterY - brickCenterY;
+
+        const intersectX = Math.abs(deltaX) - (brick.width / 2 + ball.radius);
+        const intersectY = Math.abs(deltaY) - (brick.height / 2 + ball.radius);
+
+        if (intersectX > intersectY) {
+          ball.velocityY = -ball.velocityY;
+        } else {
+          ball.velocityX = -ball.velocityX;
+        }
+
+        brick.hits--;
+        if (brick.hits <= 0) {
+          brick.destroyed = true;
+          score += brick.points;
+          this.updateUI();
+
+          particleSystem.createExplosion(
+            brick.x + brick.width / 2,
+            brick.y + brick.height / 2,
+            brick.color
+          );
+          particleSystem.createFloatingScore(
+            brick.x + brick.width / 2,
+            brick.y + brick.height / 2,
+            brick.points
+          );
+
+          aiAssistant.metrics.bricksHit++;
+          if (Math.random() < aiAssistant.getAdjustedPowerUpChance()) {
+            powerUpSystem.dropPowerUp(
+              brick.x + brick.width / 2,
+              brick.y + brick.height
+            );
+          }
+
+          if (bricks.every((b) => b.destroyed)) {
+            this.levelComplete();
+          }
+        } else {
+          if (brick.hits === 1 && brick.maxHits === 2) {
+            brick.color = brick.color.replace("44", "88");
+            particleSystem.createSmallExplosion(
+              brick.x + brick.width / 2,
+              brick.y + brick.height / 2,
+              brick.color
+            );
+          }
+        }
+
+        break;
+      }
+    }
+  }
+
+  checkPaddleCollision() {
+    let paddleWidth = paddle.width;
+    if (
+      aiAssistant.currentAssistanceLevel ===
+      aiAssistant.assistanceLevels.ACTIVE_HELP
+    ) {
+      paddleWidth += 20;
+    }
+
+    if (
+      ball.y + ball.radius >= paddle.y &&
+      ball.y - ball.radius <= paddle.y + paddle.height &&
+      ball.x >= paddle.x - (paddleWidth - paddle.width) / 2 &&
+      ball.x <= paddle.x + paddleWidth - (paddleWidth - paddle.width) / 2
+    ) {
+      aiAssistant.metrics.paddleHits++;
+      aiAssistant.metrics.totalBallBounces++;
+      aiAssistant.metrics.consecutiveDeaths = 0;
+
+      const hitPos = (ball.x - paddle.x) / paddle.width;
+      const angle = (hitPos - 0.5) * Math.PI * 0.6;
+
+      ball.velocityX = Math.sin(angle) * ball.speed;
+      ball.velocityY = -Math.abs(Math.cos(angle) * ball.speed);
+      ball.y = paddle.y - ball.radius - 1;
+    }
+  }
+
+  levelComplete() {
+    level++;
+    ball.speed += 0.5;
+    gameState = GAME_STATES.BALL_ON_PADDLE;
+    ball.velocityX = 0;
+    ball.velocityY = 0;
+    this.generateBricks();
+    this.updateUI();
+  }
+
+  loseLife() {
+    lives--;
+    aiAssistant.metrics.ballsLost++;
+    aiAssistant.metrics.missedBalls++;
+    aiAssistant.metrics.consecutiveDeaths++;
+    this.updateUI();
+
+    if (lives <= 0) {
+      gameState = GAME_STATES.GAME_OVER;
+    } else {
+      gameState = GAME_STATES.BALL_ON_PADDLE;
+      ball.velocityX = 0;
+      ball.velocityY = 0;
+      balls = [ball];
+    }
+  }
+
+  togglePause() {
+    if (gameState === GAME_STATES.PAUSED) {
+      gameState = pausedState.previousState;
+      const pauseDuration = Date.now() - pausedState.pauseStartTime;
+      for (let activePowerUp of powerUpSystem.activePowerUps) {
+        activePowerUp.startTime += pauseDuration;
+      }
+      pausedState = null;
+    } else if (
+      gameState === GAME_STATES.PLAYING ||
+      gameState === GAME_STATES.BALL_ON_PADDLE
+    ) {
+      pausedState = {
+        previousState: gameState,
+        pauseStartTime: Date.now(),
+      };
+      gameState = GAME_STATES.PAUSED;
+    }
+  }
+
+  restartGame() {
+    score = 0;
+    lives = 3;
+    level = 1;
+    ball.speed = 6;
+    gameState = GAME_STATES.BALL_ON_PADDLE;
+    ball.velocityX = 0;
+    ball.velocityY = 0;
+    paddle.x = canvas.width / 2 - paddle.width / 2;
+    paddle.reset();
+    powerUpSystem.clear();
+    balls = [ball];
+    particleSystem.clear();
+    aiAssistant.reset();
+    this.generateBricks();
+    this.updateUI();
+  }
+
+  updateUI() {
+    document.getElementById("score").textContent = score;
+    document.getElementById("lives").textContent = lives;
+    document.getElementById("level").textContent = level;
+  }
+
+  update() {
+    if (gameState !== GAME_STATES.PAUSED) {
+      paddle.update(keys, mouseX);
+      ball.update();
+      this.checkBrickCollisions();
+      this.checkPaddleCollision();
+      powerUpSystem.update();
+      aiAssistant.updateMetrics();
+      aiAssistant.applyAssistance(ball);
+      particleSystem.update();
+    }
+  }
+
+  renderGameOver(ctx) {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const textColor =
+      themeManager.currentTheme.name === "Minimalist" ? "#E53E3E" : "#EC4899";
+    ctx.fillStyle = textColor;
+    ctx.font = 'bold 48px "Segoe UI"';
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 50);
+
+    const scoreColor =
+      themeManager.currentTheme.name === "Minimalist" ? "#4A5568" : "#F8FAFC";
+    ctx.fillStyle = scoreColor;
+    ctx.font = '24px "Segoe UI"';
+    ctx.fillText(`Final Score: ${score}`, canvas.width / 2, canvas.height / 2);
+    ctx.fillText(
+      "Press R to Restart",
+      canvas.width / 2,
+      canvas.height / 2 + 50
+    );
+  }
+
+  renderPauseScreen(ctx) {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const pauseColor = themeManager.getColors().paddle;
+    ctx.fillStyle = pauseColor;
+    ctx.font = 'bold 48px "Segoe UI"';
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2 - 50);
+
+    const instructionColor =
+      themeManager.currentTheme.name === "Minimalist" ? "#718096" : "#F8FAFC";
+    ctx.fillStyle = instructionColor;
+    ctx.font = '24px "Segoe UI"';
+    ctx.fillText("Press P to Resume", canvas.width / 2, canvas.height / 2 + 20);
+  }
+
+  render(ctx) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    BrickManager.renderBricks(ctx, bricks);
+    powerUpSystem.render(ctx);
+    paddle.render(ctx);
+    ball.render(ctx);
+    particleSystem.render(ctx);
+
+    if (gameState === GAME_STATES.GAME_OVER) {
+      this.renderGameOver(ctx);
+    } else if (gameState === GAME_STATES.PAUSED) {
+      this.renderPauseScreen(ctx);
+    }
+  }
+}
+
+/**
+ * Professional game state management
+ */
+const GAME_STATES = {
+  PLAYING: "playing",
+  BALL_ON_PADDLE: "ball_on_paddle",
+  GAME_OVER: "game_over",
+  LEVEL_COMPLETE: "level_complete",
+  PAUSED: "paused",
+};

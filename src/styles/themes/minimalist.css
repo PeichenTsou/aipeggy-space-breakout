@@ -1,0 +1,28 @@
+/* ===== MINIMALIST THEME (SECONDARY) ===== */
+body.theme-minimalist {
+    background: var(--minimal-bg);
+    color: var(--minimal-primary);
+}
+
+body.theme-minimalist #gameCanvas {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: var(--shadow-lg);
+}
+
+body.theme-minimalist #gameInfo {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #e2e8f0;
+    color: var(--minimal-primary);
+}
+
+body.theme-minimalist #instructions {
+    color: var(--minimal-secondary);
+}
+
+body.theme-minimalist .power-up-indicator {
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--minimal-primary);
+    box-shadow: var(--shadow-md);
+    border: 1px solid #e2e8f0;
+}
