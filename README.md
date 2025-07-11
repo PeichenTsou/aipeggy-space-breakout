@@ -264,7 +264,7 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for gu
 
 ## 🎮 Play Now!
 
-**[🚀 Launch AIPeggy Space Breakout](src/index.html)**
+**[🚀 Launch AIPeggy Space Breakout](https://peichentsou.github.io/aipeggy-space-breakout/src/index.html)**
 
 ---
 
