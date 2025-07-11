@@ -20,7 +20,8 @@ Destroy all bricks on the screen by bouncing a ball with your paddle. Complete a
 
 - **Arrow Keys (← →)**: Move paddle left and right
 - **Mouse Movement**: Alternative paddle control (hover over game area)
-- **Spacebar**: Launch ball from paddle
+- **Spacebar**: Launch ball from paddle / Shoot laser projectiles
+- **B Key**: Activate energy beam attack (when energy bar is full)
 - **Click**: Alternative ball launch method
 
 ### Game Management
@@ -40,12 +41,32 @@ Destroy all bricks on the screen by bouncing a ball with your paddle. Complete a
 
 ### Brick Types & Properties
 
-| Type       | Color  | Hits | Points | Strategy                      |
-| ---------- | ------ | ---- | ------ | ----------------------------- |
-| **Red**    | Red    | 1    | 10     | Easy targets, clear first     |
-| **Orange** | Orange | 1    | 20     | Medium value, good targets    |
-| **Yellow** | Yellow | 2    | 30     | Requires planning, high value |
-| **Green**  | Green  | 2    | 40     | Highest value, prioritize     |
+| Type          | Color  | Hits | Points | Strategy                      |
+| ------------- | ------ | ---- | ------ | ----------------------------- |
+| **Red**       | Red    | 1    | 10     | Easy targets, clear first     |
+| **Orange**    | Orange | 1    | 20     | Medium value, good targets    |
+| **Yellow**    | Yellow | 2    | 30     | Requires planning, high value |
+| **Green**     | Green  | 2    | 40     | Highest value, prioritize     |
+| **Line Bomb** | Gold   | 1    | 100    | Destroys entire row/column    |
+| **Area Bomb** | Gold   | 1    | 150    | Destroys 3x3 area around it   |
+
+### Special Bomb Bricks
+
+#### Line Bomb (✚)
+
+- **Visual**: Golden brick with cross (✚) icon and pulsing glow
+- **Effect**: Destroys entire row or column when hit
+- **Strategy**: Target when aligned with many bricks
+- **Chain Reaction**: Can trigger other bombs in the destruction path
+- **Spawn Rate**: 5% chance when generating new bricks
+
+#### Area Bomb (💥)
+
+- **Visual**: Golden brick with explosion (💥) icon and shimmering animation
+- **Effect**: Destroys 3x3 area around the bomb when triggered
+- **Strategy**: Most effective when surrounded by bricks
+- **Chain Reaction**: Can trigger other bombs within the blast radius
+- **Spawn Rate**: 5% chance when generating new bricks
 
 ### Brick Behavior
 
@@ -103,6 +124,69 @@ Destroy all bricks on the screen by bouncing a ball with your paddle. Complete a
 - **Multi-ball Timing**: Activate when bricks are clustered
 - **Conservation**: Don't waste power-ups on easy sections
 - **AI Assistance**: Struggling players get more power-up drops
+
+## ⚡ Energy System
+
+### Energy Mechanics
+
+#### Energy Accumulation
+
+- **Brick Destruction**: Gain energy by destroying bricks
+- **Different Values**: Different brick types give different energy amounts
+- **Visual Feedback**: Floating "+X Energy" text appears when energy is gained
+- **Energy Bar**: Visual indicator at top of screen shows current energy level
+
+#### Energy Bar States
+
+- **Empty**: Gray bar, no energy available
+- **Filling**: Blue gradient shows energy accumulation progress
+- **Full**: Pulsing gold effect indicates beam attack is ready
+- **Cooldown**: Red tint during 5-second cooldown period
+
+### Beam Attack System
+
+#### Activation
+
+- **Key**: Press 'B' when energy bar is full
+- **Requirement**: Energy bar must be completely filled
+- **Instant Use**: Energy is consumed immediately upon activation
+
+#### Beam Effects
+
+- **Visual**: Devastating golden vertical beam from paddle to top of screen
+- **Destruction**: Destroys all bricks in the beam's path
+- **Particles**: Spectacular particle trails and screen impact effects
+- **Sound**: Powerful audio feedback (when sound system is implemented)
+
+#### Strategic Usage
+
+- **Dense Areas**: Most effective when many bricks are vertically aligned
+- **Difficult Situations**: Save for when regular gameplay becomes challenging
+- **Level Clearing**: Excellent for clearing final difficult-to-reach bricks
+- **Emergency Tool**: Use when ball control becomes unmanageable
+
+### Energy Strategy Guide
+
+#### Energy Management
+
+1. **Conservation**: Don't waste beam attacks on sparse brick areas
+2. **Timing**: Wait for optimal brick alignment before using beam
+3. **Emergency Use**: Save energy for difficult situations
+4. **Level Planning**: Consider energy availability when approaching new levels
+
+#### Optimal Beam Timing
+
+- **Vertical Columns**: Target areas with many bricks in a straight line
+- **Dense Clusters**: Use when bricks are tightly packed vertically
+- **Final Cleanup**: Clear remaining difficult bricks at level end
+- **Multi-Hit Bricks**: Especially effective against yellow and green bricks
+
+#### Energy Efficiency Tips
+
+- **Brick Priority**: Focus on destroying higher-value bricks for more energy
+- **Combo Potential**: Combine with power-ups for maximum effectiveness
+- **Cooldown Awareness**: Plan next moves during 5-second cooldown period
+- **Visual Cues**: Watch for energy bar pulsing to know when beam is ready
 
 ## 🤖 AI Assistance System
 

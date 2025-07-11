@@ -193,8 +193,31 @@ Act as a senior architect with expert knowledge in HTML game development:
 - Comprehensive documentation
 - Modular structure
 
+## Critical Development Reminders
+
+### Memory Bank Management
+
+- **DONT forget to update memory bank before asking me to start a new task**
+- Always update progress.md, activeContext.md, and relevant files after completing work
+- Document all bug fixes, new features, and current project state
+- Ensure memory bank reflects actual working state before task completion
+
+### Server and Testing Guidelines
+
+- **Don't try to use python just let me open directly by html using browser, don't need server at all**
+- AIPeggy runs as client-side HTML/JavaScript - no server required
+- Test by opening src/index.html directly in browser
+- All ES6 modules work without local server for this project
+
+### Feature Implementation Validation
+
+- **After implementing new features, always verify core game mechanics still work correctly**
+- Test basic functions: ball physics, paddle movement, collision detection, scoring
+- Verify level progression and lives system work properly
+- Check that new features don't break existing functionality
+
 ---
 
-**Last Updated**: 2025-01-07
-**Version**: 1.0.0
-**Confidence Level**: 9/10
+**Last Updated**: 2025-01-11
+**Version**: 1.1.0 (v5.0.0 Release)
+**Confidence Level**: 10/10

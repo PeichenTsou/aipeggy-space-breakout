@@ -2,7 +2,14 @@
 
 ## 🏗️ System Architecture Overview
 
-AIPeggy is built using a modern, modular architecture within a single HTML file constraint. The system follows object-oriented design principles with clear separation of concerns and professional code organization.
+AIPeggy is built using a modern, modular architecture with professional separation of concerns. The system follows object-oriented design principles with clean modular organization across multiple files and systems.
+
+### v5.0.0 Architecture Enhancements
+
+- **Bomb Bricks System**: Advanced collision detection with chain reaction algorithms
+- **Energy System**: Resource management with visual feedback and cooldown mechanics
+- **Particle Pooling**: Performance optimization preventing memory spikes
+- **Enhanced Performance**: 60fps maintained across all new features with optimized rendering
 
 ### Core Architecture Principles
 
@@ -415,6 +422,292 @@ render(ctx) {
 - **Effect Culling**: Only apply expensive effects when theme supports them
 - **Efficient Clearing**: Single canvas clear per frame
 - **Object Pooling**: Reuse particle objects where possible
+
+## 🎆 Bomb Bricks System Architecture
+
+### Bomb Brick Types
+
+#### Line Bomb Implementation
+
+```javascript
+class LineBomb extends Brick {
+  constructor(x, y) {
+    super(x, y, BRICK_WIDTH, BRICK_HEIGHT);
+    this.type = "LINE_BOMB";
+    this.icon = "✚";
+    this.points = 100;
+    this.glowIntensity = 0.8;
+  }
+
+  explode() {
+    // Destroy entire row or column
+    const explosionPattern = this.determineExplosionDirection();
+    this.triggerChainReaction(explosionPattern);
+  }
+}
+```
+
+#### Area Bomb Implementation
+
+```javascript
+class AreaBomb extends Brick {
+  constructor(x, y) {
+    super(x, y, BRICK_WIDTH, BRICK_HEIGHT);
+    this.type = "AREA_BOMB";
+    this.icon = "💥";
+    this.points = 150;
+    this.shimmerEffect = true;
+  }
+
+  explode() {
+    // Destroy 3x3 area around bomb
+    const affectedBricks = this.getBricksInRadius(1.5);
+    this.destroyBricksInArea(affectedBricks);
+  }
+}
+```
+
+### Chain Reaction Algorithm
+
+```javascript
+triggerChainReaction(initialExplosion) {
+  const explosionQueue = [...initialExplosion];
+  const processedBombs = new Set();
+
+  while (explosionQueue.length > 0) {
+    const currentBrick = explosionQueue.shift();
+
+    if (currentBrick.isBomb() && !processedBombs.has(currentBrick.id)) {
+      processedBombs.add(currentBrick.id);
+      const newExplosions = currentBrick.explode();
+      explosionQueue.push(...newExplosions);
+    }
+  }
+}
+```
+
+### Visual Effects System
+
+**Bomb Rendering:**
+
+```javascript
+renderBomb(ctx) {
+  // Golden base with pulsing glow
+  ctx.fillStyle = '#FFD700';
+  ctx.fillRect(this.x, this.y, this.width, this.height);
+
+  // Pulsing glow effect
+  const glowAlpha = 0.3 + 0.4 * Math.sin(Date.now() * 0.005);
+  ctx.shadowColor = '#FFD700';
+  ctx.shadowBlur = 20 * glowAlpha;
+
+  // Icon rendering
+  ctx.fillStyle = '#000';
+  ctx.font = '16px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText(this.icon, this.x + this.width/2, this.y + this.height/2 + 6);
+}
+```
+
+## ⚡ Energy System Architecture
+
+### EnergySystem Class
+
+```javascript
+class EnergySystem {
+  constructor() {
+    this.energy = 0;
+    this.maxEnergy = 100;
+    this.isOnCooldown = false;
+    this.cooldownDuration = 5000; // 5 seconds
+    this.beamWidth = 20;
+  }
+
+  addEnergy(amount) {
+    this.energy = Math.min(this.energy + amount, this.maxEnergy);
+    this.showEnergyGainFeedback(amount);
+  }
+
+  activateBeam() {
+    if (this.energy >= this.maxEnergy && !this.isOnCooldown) {
+      this.fireBeam();
+      this.energy = 0;
+      this.startCooldown();
+    }
+  }
+}
+```
+
+### Energy Accumulation System
+
+```javascript
+const ENERGY_VALUES = {
+  RED_BRICK: 5,
+  ORANGE_BRICK: 8,
+  YELLOW_BRICK: 12,
+  GREEN_BRICK: 15,
+  LINE_BOMB: 25,
+  AREA_BOMB: 30
+};
+
+onBrickDestroyed(brick) {
+  const energyGain = ENERGY_VALUES[brick.type] || 5;
+  energySystem.addEnergy(energyGain);
+
+  // Visual feedback
+  particleSystem.createEnergyText(
+    brick.x + brick.width/2,
+    brick.y,
+    `+${energyGain} Energy`,
+    '#4A90E2'
+  );
+}
+```
+
+### Beam Attack Implementation
+
+```javascript
+fireBeam() {
+  const beamX = paddle.x + paddle.width/2 - this.beamWidth/2;
+  const beamY = 0;
+  const beamHeight = canvas.height - paddle.y;
+
+  // Visual beam effect
+  this.renderBeam(beamX, beamY, this.beamWidth, beamHeight);
+
+  // Destroy bricks in beam path
+  const affectedBricks = this.getBricksInBeamPath(beamX, this.beamWidth);
+  affectedBricks.forEach(brick => {
+    brick.destroy();
+    this.createBeamParticles(brick.x, brick.y);
+  });
+
+  // Screen shake effect
+  this.triggerScreenShake(300); // 300ms duration
+}
+```
+
+### Energy Bar Rendering
+
+```javascript
+renderEnergyBar(ctx) {
+  const barX = 20;
+  const barY = 60;
+  const barWidth = 200;
+  const barHeight = 20;
+
+  // Background
+  ctx.fillStyle = '#333';
+  ctx.fillRect(barX, barY, barWidth, barHeight);
+
+  // Energy fill
+  const fillWidth = (this.energy / this.maxEnergy) * barWidth;
+  const gradient = ctx.createLinearGradient(barX, barY, barX + fillWidth, barY);
+
+  if (this.energy >= this.maxEnergy) {
+    // Pulsing gold when full
+    const pulseAlpha = 0.6 + 0.4 * Math.sin(Date.now() * 0.01);
+    gradient.addColorStop(0, `rgba(255, 215, 0, ${pulseAlpha})`);
+    gradient.addColorStop(1, `rgba(255, 165, 0, ${pulseAlpha})`);
+  } else {
+    // Blue gradient when filling
+    gradient.addColorStop(0, '#4A90E2');
+    gradient.addColorStop(1, '#357ABD');
+  }
+
+  ctx.fillStyle = gradient;
+  ctx.fillRect(barX, barY, fillWidth, barHeight);
+
+  // Border
+  ctx.strokeStyle = '#FFF';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(barX, barY, barWidth, barHeight);
+}
+```
+
+## 🔄 Enhanced Particle System (v5.0.0)
+
+### Particle Pooling Implementation
+
+```javascript
+class ParticlePool {
+  constructor(maxSize = 1000) {
+    this.pool = [];
+    this.active = [];
+    this.maxSize = maxSize;
+
+    // Pre-allocate particles
+    for (let i = 0; i < maxSize; i++) {
+      this.pool.push(new Particle());
+    }
+  }
+
+  getParticle() {
+    if (this.pool.length > 0) {
+      const particle = this.pool.pop();
+      this.active.push(particle);
+      return particle;
+    }
+    return null; // Pool exhausted
+  }
+
+  releaseParticle(particle) {
+    const index = this.active.indexOf(particle);
+    if (index > -1) {
+      this.active.splice(index, 1);
+      particle.reset();
+      this.pool.push(particle);
+    }
+  }
+}
+```
+
+### Bomb Explosion Particles
+
+```javascript
+createBombExplosion(x, y, type) {
+  const particleCount = type === 'AREA_BOMB' ? 30 : 20;
+
+  for (let i = 0; i < particleCount; i++) {
+    const particle = particlePool.getParticle();
+    if (particle) {
+      particle.init({
+        x: x,
+        y: y,
+        velocityX: (Math.random() - 0.5) * 10,
+        velocityY: (Math.random() - 0.5) * 10,
+        color: '#FFD700',
+        life: 1.0,
+        decay: 0.015,
+        size: Math.random() * 4 + 2
+      });
+    }
+  }
+}
+```
+
+### Energy Beam Particles
+
+```javascript
+createBeamParticles(x, y) {
+  for (let i = 0; i < 15; i++) {
+    const particle = particlePool.getParticle();
+    if (particle) {
+      particle.init({
+        x: x + Math.random() * 20,
+        y: y,
+        velocityX: (Math.random() - 0.5) * 3,
+        velocityY: -Math.random() * 5,
+        color: '#FFD700',
+        life: 0.8,
+        decay: 0.02,
+        size: Math.random() * 3 + 1,
+        trail: true
+      });
+    }
+  }
+}
+```
 
 ## 📊 Performance Considerations
 

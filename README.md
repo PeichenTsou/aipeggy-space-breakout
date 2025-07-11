@@ -1,6 +1,6 @@
 # 🚀 AIPeggy Space Breakout
 
-[![Version](https://img.shields.io/badge/Version-4.1.0-blue.svg)](https://github.com/username/aipeggy-space-breakout)
+[![Version](https://img.shields.io/badge/Version-5.0.0-blue.svg)](https://github.com/username/aipeggy-space-breakout)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![HTML5](https://img.shields.io/badge/HTML5-Canvas-orange.svg)](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
@@ -14,8 +14,10 @@
 ### 🎮 **Core Gameplay**
 
 - **Classic Breakout Mechanics** - Destroy all bricks to advance levels
+- **Bomb Bricks System** - Line bombs (✚) and Area bombs (💥) with spectacular chain reactions
+- **Energy System** - Build energy by destroying bricks, unleash powerful beam attacks
 - **Intelligent AI Assistance** - Adaptive difficulty that helps struggling players invisibly
-- **Power-up System** - Wide Paddle, Multi-ball, and Slow Ball effects
+- **Power-up System** - Wide Paddle, Multi-ball, Slow Ball, and Laser effects
 - **Progressive Difficulty** - Increasing speed and randomized brick layouts
 
 ### 🎨 **Visual Excellence**
@@ -75,14 +77,15 @@ npx serve .
 
 ### **Controls**
 
-| Key     | Action                             |
-| ------- | ---------------------------------- |
-| `←` `→` | Move paddle left/right             |
-| `Mouse` | Move paddle (alternative control)  |
-| `Space` | Launch ball from paddle            |
-| `P`     | Pause/unpause game                 |
-| `R`     | Restart game                       |
-| `T`     | Switch themes (Space ↔ Minimalist) |
+| Key     | Action                               |
+| ------- | ------------------------------------ |
+| `←` `→` | Move paddle left/right               |
+| `Mouse` | Move paddle (alternative control)    |
+| `Space` | Launch ball from paddle/shoot lasers |
+| `B`     | Activate energy beam attack          |
+| `P`     | Pause/unpause game                   |
+| `R`     | Restart game                         |
+| `T`     | Switch themes (Space ↔ Minimalist)   |
 
 ### **Gameplay**
 
@@ -127,12 +130,23 @@ The AI tracks metrics like hit accuracy, paddle efficiency, and consecutive deat
 
 ## 🏆 Scoring System
 
-| Brick Type      | Hits Required | Points | Color   |
-| --------------- | ------------- | ------ | ------- |
-| Red (Indigo)    | 1             | 10     | #6366F1 |
-| Orange (Purple) | 1             | 20     | #8B5CF6 |
-| Yellow (Pink)   | 2             | 30     | #EC4899 |
-| Green (Amber)   | 2             | 40     | #F59E0B |
+| Brick Type      | Hits Required | Points | Color   | Special                     |
+| --------------- | ------------- | ------ | ------- | --------------------------- |
+| Red (Indigo)    | 1             | 10     | #6366F1 | -                           |
+| Orange (Purple) | 1             | 20     | #8B5CF6 | -                           |
+| Yellow (Pink)   | 2             | 30     | #EC4899 | -                           |
+| Green (Amber)   | 2             | 40     | #F59E0B | -                           |
+| Line Bomb (✚)   | 1             | 100    | Gold    | Destroys entire row/column  |
+| Area Bomb (💥)  | 1             | 150    | Gold    | Destroys 3x3 area around it |
+
+## ⚡ Energy System
+
+- **Energy Accumulation**: Gain energy by destroying bricks (different types give different amounts)
+- **Energy Bar**: Visual indicator shows current energy level with pulsing gold effect when full
+- **Beam Attack**: Press 'B' when energy bar is full to unleash devastating vertical beam
+- **Spectacular Effects**: Golden beam with particle trails and screen impact
+- **Cooldown**: 5-second cooldown prevents spam while maintaining excitement
+- **Strategic Use**: Save energy for dense brick areas or difficult situations
 
 ## 🏗️ Architecture
 
@@ -158,7 +172,8 @@ aipeggy-space-breakout/
 │       └── systems/
 │           ├── AIAssistant.js    # Intelligent assistance
 │           ├── PowerUpSystem.js  # Power-up management
-│           └── ParticleSystem.js # Visual effects
+│           ├── ParticleSystem.js # Visual effects
+│           └── EnergySystem.js   # Energy and beam system
 ├── archive/                    # Previous versions
 ├── memory-bank/               # Development context
 └── docs/                      # Documentation files

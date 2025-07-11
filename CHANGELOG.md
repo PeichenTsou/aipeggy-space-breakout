@@ -5,6 +5,51 @@ All notable changes to the AIPeggy AI Brick Ball Game will be documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.0] - 2025-01-11
+
+### 🎆 Added - Bomb Bricks System
+
+- **Line Bomb Bricks (✚)**: Destroys entire row or column when hit
+- **Area Bomb Bricks (💥)**: Destroys 3x3 area around the bomb when triggered
+- **Visual Excellence**: Pulsing glow effects, shimmering animations, golden borders
+- **Clear Indicators**: Distinct icons with professional styling and visual feedback
+- **Spectacular Explosions**: Multi-layered particle effects with directional patterns
+- **Strategic Gameplay**: 5% spawn rate for balanced challenge and reward
+- **Chain Reactions**: Bomb explosions can trigger other bomb explosions
+- **High Scoring**: 100-150 points per bomb brick for rewarding gameplay
+
+### ⚡ Added - Energy System
+
+- **Energy Accumulation**: Gain energy by destroying bricks (different types give different amounts)
+- **Visual Energy Bar**: Professional UI with pulsing gold effect when full
+- **Powerful Beam Attack**: Press 'B' to unleash devastating vertical beam
+- **Spectacular Effects**: Golden beam with particle trails and screen impact
+- **Cooldown System**: 5-second cooldown prevents spam while maintaining excitement
+- **Energy Feedback**: Floating "+X Energy" text with blue particle effects
+- **Strategic Depth**: Save energy for dense brick areas or difficult situations
+
+### 🐛 Fixed - Critical Bug Fixes
+
+- **Screen Freezing Fixed**: Implemented particle pooling system to prevent 0.5s freezes
+- **Undefined Error Fixed**: Added comprehensive null checks in GameManager.update()
+- **Level Progression Fixed**: Level completion now properly advances to next level
+- **Lives System Fixed**: Lives now correctly decrease by 1 (not 2) per death
+- **Ball Position Reset**: Proper ball positioning after death and level completion
+
+### ⚡ Enhanced - Performance Optimizations
+
+- **Particle Pooling**: Efficient particle system preventing memory spikes
+- **Memory Management**: Improved object cleanup and reuse patterns
+- **60fps Maintained**: Smooth performance across all new features
+- **Optimized Rendering**: Enhanced collision detection and visual effects
+
+### 🎯 Enhanced - Player Experience
+
+- **Immediate Visual Feedback**: Instant response to all player actions
+- **Strategic Depth**: Bomb targeting and energy management add tactical elements
+- **Satisfying Effects**: Spectacular explosions and beam attacks provide rewarding feedback
+- **Enhanced UI**: Energy bar and bomb indicators improve game clarity
+
 ## [4.1.0] - 2025-01-11
 
 ### 🚀 Added - Laser Power-up System

@@ -32,7 +32,7 @@
     <canvas id="gameCanvas" width="800" height="600"></canvas>
     
     <div id="instructions">
-        Use ← → arrow keys or mouse to move paddle | Space to launch ball/shoot lasers | R to restart | P to pause | T to change theme
+        Use ← → arrow keys or mouse to move paddle | Space to launch ball/shoot lasers | B for beam attack | R to restart | P to pause | T to change theme
     </div>
 
     <!-- Core Scripts -->
@@ -48,6 +48,7 @@
     <script src="scripts/systems/AIAssistant.js"></script>
     <script src="scripts/systems/PowerUpSystem.js"></script>
     <script src="scripts/systems/ParticleSystem.js"></script>
+    <script src="scripts/systems/EnergySystem.js"></script>
     
     <!-- Main Game Script -->
     <script src="scripts/core/Game.js"></script>
@@ -84,6 +85,7 @@
         const particleSystem = new ParticleSystem();
         const powerUpSystem = new PowerUpSystem();
         const laserManager = new LaserManager();
+        const energySystem = new EnergySystem();
         const gameManager = new GameManager();
 
         // Initialize game entities

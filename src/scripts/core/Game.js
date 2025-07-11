@@ -20,6 +20,12 @@ class GameManager {
           this.shootLaser();
         }
       }
+      if (e.key === "b" || e.key === "B") {
+        // Handle beam attack
+        if (gameState === GAME_STATES.PLAYING && energySystem.canUseBeam()) {
+          this.activateBeam();
+        }
+      }
       if (e.key === "r" || e.key === "R") {
         this.restartGame();
       }
@@ -62,6 +68,96 @@ class GameManager {
     ) {
       laserManager.createLaser(paddle.x, paddle.y, paddle.width);
       paddle.lastLaserTime = Date.now();
+    }
+  }
+
+  /**
+   * Activate powerful beam attack
+   */
+  activateBeam() {
+    if (energySystem.activateBeam()) {
+      // Check beam collisions and destroy bricks
+      const hitBricks = energySystem.checkBeamCollisions();
+
+      for (let brick of hitBricks) {
+        brick.destroyed = true;
+        score += brick.points;
+
+        // Add energy for destroyed bricks
+        const brickType = this.getBrickType(brick);
+        energySystem.addEnergy(brickType);
+
+        // Handle bomb explosions
+        if (brick.isBomb) {
+          this.handleBombExplosion(brick);
+        }
+      }
+
+      this.updateUI();
+
+      // Check level completion
+      if (bricks.every((b) => b.destroyed)) {
+        this.levelComplete();
+      }
+    }
+  }
+
+  /**
+   * Handle bomb brick explosion
+   */
+  handleBombExplosion(bombBrick) {
+    const destroyedBricks = BrickManager.explodeBomb(bombBrick, bricks);
+
+    // Create spectacular explosion effect
+    particleSystem.createBombExplosion(
+      bombBrick.x + bombBrick.width / 2,
+      bombBrick.y + bombBrick.height / 2,
+      bombBrick.bombType
+    );
+
+    // Process destroyed bricks
+    for (let brick of destroyedBricks) {
+      score += brick.points;
+
+      // Add energy for each destroyed brick
+      const brickType = this.getBrickType(brick);
+      energySystem.addEnergy(brickType);
+
+      // Create explosion effects for each destroyed brick
+      particleSystem.createExplosion(
+        brick.x + brick.width / 2,
+        brick.y + brick.height / 2,
+        brick.color
+      );
+
+      particleSystem.createFloatingScore(
+        brick.x + brick.width / 2,
+        brick.y + brick.height / 2,
+        brick.points
+      );
+    }
+  }
+
+  /**
+   * Get brick type from brick object
+   */
+  getBrickType(brick) {
+    if (brick.isBomb) {
+      return "BOMB";
+    }
+
+    // Determine type based on points
+    switch (brick.points) {
+      case 10:
+        return "RED";
+      case 20:
+        return "ORANGE";
+      case 30:
+        return "YELLOW";
+      case 40:
+        return "GREEN";
+      default:
+        return "RED";
     }
   }
 
@@ -110,13 +206,24 @@ class GameManager {
           if (brick.hits <= 0) {
             brick.destroyed = true;
             score += brick.points;
+
+            // Add energy for destroyed brick
+            const brickType = this.getBrickType(brick);
+            energySystem.addEnergy(brickType);
+
             this.updateUI();
 
-            particleSystem.createExplosion(
-              brick.x + brick.width / 2,
-              brick.y + brick.height / 2,
-              brick.color
-            );
+            // Handle bomb explosions
+            if (brick.isBomb) {
+              this.handleBombExplosion(brick);
+            } else {
+              particleSystem.createExplosion(
+                brick.x + brick.width / 2,
+                brick.y + brick.height / 2,
+                brick.color
+              );
+            }
+
             particleSystem.createFloatingScore(
               brick.x + brick.width / 2,
               brick.y + brick.height / 2,
@@ -239,8 +346,16 @@ class GameManager {
     level++;
     ball.speed += 0.5;
     gameState = GAME_STATES.BALL_ON_PADDLE;
+
+    // Properly reset ball position and velocity
+    ball.x = paddle.x + paddle.width / 2;
+    ball.y = paddle.y - ball.radius - 1;
     ball.velocityX = 0;
     ball.velocityY = 0;
+
+    // Reset balls array to just the main ball
+    balls = [ball];
+
     this.generateBricks();
     this.updateUI();
   }
@@ -256,8 +371,14 @@ class GameManager {
       gameState = GAME_STATES.GAME_OVER;
     } else {
       gameState = GAME_STATES.BALL_ON_PADDLE;
+
+      // Properly reset ball position and velocity
+      ball.x = paddle.x + paddle.width / 2;
+      ball.y = paddle.y - ball.radius - 1;
       ball.velocityX = 0;
       ball.velocityY = 0;
+
+      // Reset balls array to just the main ball
       balls = [ball];
     }
   }
@@ -297,6 +418,9 @@ class GameManager {
     balls = [ball];
     particleSystem.clear();
     aiAssistant.reset();
+    if (energySystem && typeof energySystem.reset === "function") {
+      energySystem.reset();
+    }
     this.generateBricks();
     this.updateUI();
   }
@@ -309,21 +433,28 @@ class GameManager {
 
   update() {
     if (gameState !== GAME_STATES.PAUSED) {
-      paddle.update(keys, mouseX);
+      // Null checks to prevent undefined errors
+      if (paddle && typeof paddle.update === "function") {
+        paddle.update(keys, mouseX);
+      }
 
       // Update all balls and remove those that fall off screen
-      for (let i = balls.length - 1; i >= 0; i--) {
-        const currentBall = balls[i];
-        currentBall.update();
+      if (balls && Array.isArray(balls)) {
+        for (let i = balls.length - 1; i >= 0; i--) {
+          const currentBall = balls[i];
+          if (currentBall && typeof currentBall.update === "function") {
+            currentBall.update();
 
-        // Remove balls that fall off screen (except main ball)
-        if (currentBall.y > canvas.height && currentBall !== ball) {
-          balls.splice(i, 1);
+            // Remove balls that fall off screen (except main ball)
+            if (currentBall.y > canvas.height && currentBall !== ball) {
+              balls.splice(i, 1);
+            }
+          }
         }
       }
 
       // If main ball falls off screen, handle life loss
-      if (ball.y > canvas.height) {
+      if (ball && ball.y > canvas.height) {
         this.loseLife();
         return;
       }
@@ -331,11 +462,30 @@ class GameManager {
       this.checkBrickCollisions();
       this.checkPaddleCollision();
       this.checkLaserCollisions();
-      powerUpSystem.update();
-      laserManager.update();
-      aiAssistant.updateMetrics();
-      aiAssistant.applyAssistance(ball);
-      particleSystem.update();
+
+      // Safe system updates with null checks
+      if (powerUpSystem && typeof powerUpSystem.update === "function") {
+        powerUpSystem.update();
+      }
+      if (laserManager && typeof laserManager.update === "function") {
+        laserManager.update();
+      }
+      if (aiAssistant && typeof aiAssistant.updateMetrics === "function") {
+        aiAssistant.updateMetrics();
+      }
+      if (
+        aiAssistant &&
+        typeof aiAssistant.applyAssistance === "function" &&
+        ball
+      ) {
+        aiAssistant.applyAssistance(ball);
+      }
+      if (particleSystem && typeof particleSystem.update === "function") {
+        particleSystem.update();
+      }
+      if (energySystem && typeof energySystem.update === "function") {
+        energySystem.update();
+      }
     }
   }
 
@@ -397,6 +547,11 @@ class GameManager {
     laserManager.render(ctx);
 
     particleSystem.render(ctx);
+
+    // Render energy system
+    if (energySystem && typeof energySystem.render === "function") {
+      energySystem.render(ctx);
+    }
 
     if (gameState === GAME_STATES.GAME_OVER) {
       this.renderGameOver(ctx);
